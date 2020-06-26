@@ -14,13 +14,19 @@
     "tabs",
     "activeTab",
     "storage",
+    "declarativeContent",
     "http://smittenkitchen.com/*",
-    "https://smittenkitchen.com/*"
+    "https://smittenkitchen.com/*",
+    "https://www.epicurious.com/recipes/*",
+    "http://www.epicurious.com/recipes/*"
   ],
   "content_scripts": [
   {
     "matches": [
-      "http://smittenkitchen.com/*", "https://smittenkitchen.com/*"
+      "http://smittenkitchen.com/*",
+      "https://smittenkitchen.com/*",
+      "https://www.epicurious.com/recipes/*",
+      "http://www.epicurious.com/recipes/*"
     ],
     "js": ["content.js"]
   }
