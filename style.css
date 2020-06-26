@@ -1,0 +1,40 @@
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  height: 100px;
+}
+
+#header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 50%
+}
+
+#add {
+  color: green;
+}
+
+#remove {
+  color: red;
+}
+
+#title {
+  color:
+}
+
+#logo {
+  width: 20%;
+  height: 50%
+}
+
+.button {
+  width: 50%
+}

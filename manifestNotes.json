@@ -1,0 +1,26 @@
+{
+  "name": "Za'atar",
+  "version": "1.0",
+  "manifest_version": 1,
+  //description on web store
+  "description": "Save your favorite recipes to your Za'atar recipe box",
+  "icons": {
+    //shown on web store
+    "128": "spice.png"
+    //48 x 48 on extensions management page
+    //16 x 16 shown on browser
+    //if you only include one, chrome will resize so you can see in all 3 places
+  },
+  //type of action: Browser, Page, or none
+  //cannot pick both
+  "browser_action": {
+    //description shows when you hover over icon
+    "default_title": "Save your recipes wherever you go",
+    "default_popup": "popup.html"
+  },
+  //intent of app what you will access from the user (can list specific sites)
+  //can also add geolocation, cookies, and other info
+  "permissions": [
+    "http://*/*", "https://*/*"
+  ]
+}

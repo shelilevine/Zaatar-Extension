@@ -1,0 +1,31 @@
+{
+  "name": "Za'atar",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Save your favorite recipes to your Za'atar recipe box",
+  "icons": {
+    "128": "salt.png"
+  },
+  "browser_action": {
+    "default_title": "Save your recipes wherever you go",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "http://smittenkitchen.com/*",
+    "https://smittenkitchen.com/*"
+  ],
+  "content_scripts": [
+  {
+    "matches": [
+      "http://smittenkitchen.com/*", "https://smittenkitchen.com/*"
+    ],
+    "js": ["content.js"]
+  }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
