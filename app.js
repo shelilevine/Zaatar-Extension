@@ -1,10 +1,12 @@
 import React from 'react'
 import { Button, Card, Image } from 'semantic-ui-react'
+import {getDomain} from './utility'
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.addRecipe = this.addRecipe.bind(this)
+    // this.getDomain = this.getDomain.bind(this)
   }
 
   componentDidMount() {
@@ -18,12 +20,20 @@ class App extends React.Component {
     )
   }
 
+  // getDomain(tab) {
+  //   console.log("in get Domain")
+  //   const url = tab.url
+  //   if (url.contains('epicurious')) return 'epicurious'
+  // }
+
   addRecipe () {
     //tell content to grab recipe and send it to background
     console.log("in add recipe")
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       console.log("tabs in popup.js", tabs)
-      chrome.tabs.sendMessage(tabs[0].id, {message: "add recipe"});
+      let activeTab = tabs[0]
+      let domain = getDomain(activeTab)
+      chrome.tabs.sendMessage(activeTab.id, {message: "add recipe", domain});
       // , function(response) {
       //   console.log(response.farewell);
       // });
