@@ -25,25 +25,27 @@ chrome.runtime.onMessage.addListener(
       console.log("got message in content.js", request)
       const recipe = getContent(request.domain)
       const domain = request.domain
-      console.log('content returned', recipe)
+      console.log('parsed recipe', recipe)
 
-      updatedStore.zaatar[domain] = updatedStore.zaatar[domain] || []
+      chrome.runtime.sendMessage({"message": "added recipe", domain, recipe})
 
-      let domainRecipes = updatedStore.zaatar[domain].filter(domainRecipe => domainRecipe.title !== recipe.title)
+      // updatedStore.zaatar[domain] = updatedStore.zaatar[domain] || []
 
-      updatedStore.zaatar[domain] = [...domainRecipes, recipe]
+      // let domainRecipes = updatedStore.zaatar[domain].filter(domainRecipe => domainRecipe.title !== recipe.title)
 
-      console.log("updatedStore in set", updatedStore)
+      // updatedStore.zaatar[domain] = [...domainRecipes, recipe]
 
-      chrome.storage.sync.set(updatedStore, function() {
-        console.log("chrome storage synced", updatedStore)
-      })
-      chrome.storage.sync.get(['zaatar'], async function(result) {
-        updatedStore = await result
-        console.log("after getting again", result)
-      })
+      // console.log("updatedStore in set", updatedStore)
 
-      chrome.runtime.sendMessage({"message": "added recipe", domain: request.domain, recipe});
+      // chrome.storage.sync.set(updatedStore, function() {
+      //   console.log("chrome storage synced", updatedStore)
+      // })
+      // chrome.storage.sync.get(['zaatar'], async function(result) {
+      //   updatedStore = await result
+      //   console.log("after getting again", result)
+      // })
+
+      // chrome.runtime.sendMessage({"message": "added recipe", domain: request.domain, recipe});
 
     }
     else if (request.message === "remove recipe") {

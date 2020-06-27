@@ -1,5 +1,7 @@
 console.log("background running")
 
+let updatedStore
+
 chrome.runtime.onInstalled.addListener(function() {
   chrome.storage.sync.set({zaatar: {}}, function() {
     console.log("The color is green.");
@@ -7,7 +9,8 @@ chrome.runtime.onInstalled.addListener(function() {
 
   console.log(chrome.storage.sync)
   chrome.storage.sync.get(['zaatar'], function(result) {
-    console.log(result)
+    updatedStore = result
+    console.log("on install", result)
   })
   // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
   //   chrome.declarativeContent.onPageChanged.addRules([{
@@ -42,10 +45,36 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 // Listen for messages from content.js
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if( request.message === "open_new_tab" ) {
-      chrome.tabs.create({"url": request.url});
-    }
+    // if( request.message === "open_new_tab" ) {
+    //   chrome.tabs.create({"url": request.url});
+    // }
+    chrome.storage.sync.get(['zaatar'], async function(result) {
+      updatedStore = await result
+      console.log("get on general message", updatedStore)
+    })
+    if (request.message === "added recipe") {
+      console.log("got added recipe message in background.js", request)
+      console.log("updatedStore in message receipt", updatedStore)
+
+      const domain = request.domain
+      const recipe = request.recipe
+
+      updatedStore.zaatar[domain] = updatedStore.zaatar[domain] || []
+
+      let domainRecipes = updatedStore.zaatar[domain].filter(domainRecipe => domainRecipe.title !== recipe.title)
+
+      updatedStore.zaatar[domain] = [...domainRecipes, recipe]
+
+      console.log("updatedStore before set", updatedStore)
+
+      chrome.storage.sync.set(updatedStore, function() {
+        console.log("chrome storage synced", updatedStore)
+      })
+      chrome.storage.sync.get(['zaatar'], async function(result) {
+        updatedStore = await result
+        console.log("after getting again", result)
+      })
   }
-);
+  });
 
 
