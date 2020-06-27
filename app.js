@@ -14,7 +14,28 @@ class App extends React.Component {
       function(request, sender, sendResponse) {
         if( request.message === "added recipe" ) {
 
-          console.log('got message in popup')
+          // console.log('got message in popup', request)
+          // const recipe = request.recipe
+          // const domain = request.domain
+          // let newZaatar
+          // chrome.storage.sync.get(['zaatar'], function(result) {
+          //   console.log("chrome store", result)
+          //   // const newStorageObj = result || {domain: []}
+          //   result.zaatar[domain] = result.zaatar.domain || []
+          //   // console.log("result after adding domain", result)
+          //   // newZaatar = {zaatar: {...result.zaatar, [domain]: [...result.zaatar[domain], recipe]}}
+          //   newZaatar = {...result.zaatar, [domain]: [...result.zaatar[domain], recipe]}
+          //   // const newZaatar = {domain: [...newStorageObj.domain, recipe]}
+          //   console.log('new zaatar', newZaatar)
+
+          //   // console.log("new storage", chrome.storage)
+          // })
+          // chrome.storage.sync.set({zaatar: newZaatar}, function() {
+          //   console.log("chrome storage synced")
+          // })
+          // chrome.storage.sync.get(['zaatar'], function(result) {
+          //   console.log("new chrome store", result)
+          // })
         }
       }
     )
@@ -28,9 +49,9 @@ class App extends React.Component {
 
   addRecipe () {
     //tell content to grab recipe and send it to background
-    console.log("in add recipe")
+    // console.log("in add recipe")
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      console.log("tabs in popup.js", tabs)
+      // console.log("tabs in popup.js", tabs)
       let activeTab = tabs[0]
       let domain = getDomain(activeTab)
       chrome.tabs.sendMessage(activeTab.id, {message: "add recipe", domain});

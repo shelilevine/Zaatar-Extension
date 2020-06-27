@@ -2,24 +2,45 @@
 // console.log(thumbnail[0].src)
 console.log('content.js running')
 
+let updatedStore
+chrome.storage.sync.get(['zaatar'], async function(result) {
+  updatedStore = await result
+  console.log("chrome store before set", result)
+})
+
+console.log("updated store initialization", updatedStore)
+
+
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    // if( request.message === "clicked_browser_action" ) {
 
-    //   const thumbnail = document.getElementsByClassName("wp-post-image")[0].src
-    //   console.log(thumbnail)
-
-
-    //   chrome.runtime.sendMessage({"message": "got image", "url": thumbnail});
-    // }
     if (request.message === "add recipe") {
       console.log("got message in content.js", request)
       const recipe = getContent(request.domain)
+      const domain = request.domain
       console.log('content returned', recipe)
-      // chrome.runtime.sendMessage({"message": "added recipe", recipe});
-      // chrome.storage.sync.get(['zaatar'], function(result) {
-      //   console.log(result)
-      // })
+
+      updatedStore.zaatar[domain] = updatedStore.zaatar[domain] || []
+
+      let domainRecipes = updatedStore.zaatar[domain].filter(domainRecipe => domainRecipe.title !== recipe.title)
+
+      updatedStore.zaatar[domain] = [...domainRecipes, recipe]
+
+      console.log("updatedStore in set", updatedStore)
+
+      chrome.storage.sync.set(updatedStore, function() {
+        console.log("chrome storage synced", updatedStore)
+      })
+      chrome.storage.sync.get(['zaatar'], async function(result) {
+        updatedStore = await result
+        console.log("after getting again", result)
+      })
+
+
+
+      chrome.runtime.sendMessage({"message": "added recipe", domain: request.domain, recipe});
+
     }
   }
 )
