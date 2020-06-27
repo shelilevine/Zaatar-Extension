@@ -6,58 +6,39 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.addRecipe = this.addRecipe.bind(this)
-    // this.getDomain = this.getDomain.bind(this)
+    this.removeRecipe = this.removeRecipe.bind(this)
   }
 
   componentDidMount() {
     chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
         if( request.message === "added recipe" ) {
+          console.log("got added recipe message in popup")
+        }
+        if (request.message === 'removed recipe') {
 
-          // console.log('got message in popup', request)
-          // const recipe = request.recipe
-          // const domain = request.domain
-          // let newZaatar
-          // chrome.storage.sync.get(['zaatar'], function(result) {
-          //   console.log("chrome store", result)
-          //   // const newStorageObj = result || {domain: []}
-          //   result.zaatar[domain] = result.zaatar.domain || []
-          //   // console.log("result after adding domain", result)
-          //   // newZaatar = {zaatar: {...result.zaatar, [domain]: [...result.zaatar[domain], recipe]}}
-          //   newZaatar = {...result.zaatar, [domain]: [...result.zaatar[domain], recipe]}
-          //   // const newZaatar = {domain: [...newStorageObj.domain, recipe]}
-          //   console.log('new zaatar', newZaatar)
-
-          //   // console.log("new storage", chrome.storage)
-          // })
-          // chrome.storage.sync.set({zaatar: newZaatar}, function() {
-          //   console.log("chrome storage synced")
-          // })
-          // chrome.storage.sync.get(['zaatar'], function(result) {
-          //   console.log("new chrome store", result)
-          // })
         }
       }
     )
   }
 
-  // getDomain(tab) {
-  //   console.log("in get Domain")
-  //   const url = tab.url
-  //   if (url.contains('epicurious')) return 'epicurious'
-  // }
-
   addRecipe () {
-    //tell content to grab recipe and send it to background
-    // console.log("in add recipe")
+    //tell content to grab recipe and save to local storage
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      // console.log("tabs in popup.js", tabs)
       let activeTab = tabs[0]
       let domain = getDomain(activeTab)
       chrome.tabs.sendMessage(activeTab.id, {message: "add recipe", domain});
-      // , function(response) {
-      //   console.log(response.farewell);
-      // });
+    });
+  }
+
+  removeRecipe () {
+    console.log("in removeRecipe in popup")
+
+    //tell content to remove recipe from local storage
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      let activeTab = tabs[0]
+      let domain = getDomain(activeTab)
+      chrome.tabs.sendMessage(activeTab.id, {message: "remove recipe", domain});
     });
   }
 
@@ -102,7 +83,7 @@ class App extends React.Component {
               <Button basic color='green' onClick={this.addRecipe}>
                 Add recipe
               </Button>
-              <Button basic color='red'>
+              <Button basic color='red' onClick={this.removeRecipe}>
                 Remove recipe
               </Button>
             </div>

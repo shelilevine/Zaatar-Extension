@@ -14,6 +14,12 @@ console.log("updated store initialization", updatedStore)
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+    console.log("GOT MESSAGE IN CONTENT.JS", request)
+
+    chrome.storage.sync.get(['zaatar'], async function(result) {
+      updatedStore = await result
+      console.log("chrome store before set", result)
+    })
 
     if (request.message === "add recipe") {
       console.log("got message in content.js", request)
@@ -37,9 +43,24 @@ chrome.runtime.onMessage.addListener(
         console.log("after getting again", result)
       })
 
-
-
       chrome.runtime.sendMessage({"message": "added recipe", domain: request.domain, recipe});
+
+    }
+    else if (request.message === "remove recipe") {
+      const recipe = getContent(request.domain)
+      const domain = request.domain
+
+      if (updatedStore.zaatar[domain]) {
+        updatedStore.zaatar[domain] = updatedStore.zaatar[domain].filter(domainRecipe => domainRecipe.title !== recipe.title)
+
+        chrome.storage.sync.set(updatedStore, function() {
+          console.log("chrome storage synced", updatedStore)
+        })
+        chrome.storage.sync.get(['zaatar'], async function(result) {
+          updatedStore = await result
+          console.log("after getting again", result)
+        })
+      }
 
     }
   }
