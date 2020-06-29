@@ -1,48 +1,38 @@
 console.log("background running")
-
 let updatedStore
 
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDqO_r6F_95LvL3taTGeOA0P8uCJRwNz0s",
+    authDomain: "zaatar-4d040.firebaseapp.com",
+    databaseURL: "https://zaatar-4d040.firebaseio.com",
+    projectId: "zaatar-4d040",
+    storageBucket: "zaatar-4d040.appspot.com",
+    messagingSenderId: "1022904200186",
+    appId: "1:1022904200186:web:d808271651c70cfd23d243"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore()
+
+  // console.log(firebase)
+
+
+
+
+//initialize chrome storage object
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.storage.sync.set({zaatar: {}}, function() {
-    console.log("The color is green.");
-  });
+  chrome.storage.sync.set({zaatar: {}});
 
   console.log(chrome.storage.sync)
   chrome.storage.sync.get(['zaatar'], function(result) {
     updatedStore = result
-    console.log("on install", result)
   })
-  // chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-  //   chrome.declarativeContent.onPageChanged.addRules([{
-  //     conditions: [new chrome.declarativeContent.PageStateMatcher({
-  //       pageUrl: {hostEquals: 'epicurious.com'},
-  //     })
-  //     ],
-  //         actions: [new chrome.declarativeContent.ShowPageAction()]
-  //   }]);
-  // });
 });
 
 
-// Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(function(tab) {
-  // Send a message to the active tab (received by content.js)
-  console.log(tab)
-  // console.log(chrome.storage.sync.get(['zaatar']))
-  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  //   console.log(tabs)
-  //   var activeTab = tabs[0];
-  chrome.pageAction.show(tab.id)
-  let activeTab = tab
-    chrome.tabs.sendMessage(activeTab.id, {"message": "clicked_browser_action"});
-  });
-// });
 
-
-
-
-
-// Listen for messages from content.js
+// Listen for messages
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     // if( request.message === "open_new_tab" ) {
@@ -50,12 +40,11 @@ chrome.runtime.onMessage.addListener(
     // }
     chrome.storage.sync.get(['zaatar'], async function(result) {
       updatedStore = await result
-      console.log("get on general message", updatedStore)
+      // console.log("get on general message", updatedStore)
     })
     if (request.message === "added recipe") {
-      console.log("got added recipe message in background.js", request)
-      console.log("updatedStore in message receipt", updatedStore)
-
+      // console.log("got added recipe message in background.js", request)
+      // console.log("updatedStore in message receipt", updatedStore)
       const domain = request.domain
       const recipe = request.recipe
 
@@ -65,16 +54,30 @@ chrome.runtime.onMessage.addListener(
 
       updatedStore.zaatar[domain] = [...domainRecipes, recipe]
 
-      console.log("updatedStore before set", updatedStore)
-
       chrome.storage.sync.set(updatedStore, function() {
-        console.log("chrome storage synced", updatedStore)
+        // console.log("chrome storage synced", updatedStore)
       })
       chrome.storage.sync.get(['zaatar'], async function(result) {
         updatedStore = await result
-        console.log("after getting again", result)
+        // console.log("after getting again", result)
       })
+      db.collection("recipes").doc(recipe.title).set(recipe)
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
   }
+  else if (request.message === "remove from db") {
+    const recipe = request.recipe
+    console.log("recipe in delete", recipe)
+    db.collection("recipes").doc(recipe.title).delete().then(function() {
+      console.log("Document successfully deleted!");
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
   });
+  }
+});
 
 
